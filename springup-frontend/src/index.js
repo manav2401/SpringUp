@@ -3,10 +3,28 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import { theme, ThemeProvider } from "@chakra-ui/core";
+
+const customTheme = {
+  ...theme,
+  colors: {
+    ...theme.colors,
+    brand: {
+      900: "#8491A3",
+      800: "#93B48B",
+      700: "#87D68D",
+      600: "#BCEBCB",
+      500: "F7FFF6",
+    },
+  },
+};
+
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ThemeProvider theme ={customTheme}>
+      <App />
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
