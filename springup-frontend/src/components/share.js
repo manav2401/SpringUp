@@ -10,6 +10,7 @@
 
 
 import React from "react";
+import { Heading, Stack, Box, Text } from "@chakra-ui/core";
 
 function Share({ title, desc, ...rest }) {
 
@@ -35,9 +36,9 @@ function Share({ title, desc, ...rest }) {
         </Heading> */}
         <Box display="flex" border='"#fff"' />
       </Stack>
-        <div>
-            <p>This is the second page.</p>
-        </div>
+        // <div>
+        //     <p>This is the second page.</p>
+        // </div>
     );
 
 }
