@@ -1,23 +1,12 @@
-import React from "react";
-import { Box, Heading, Flex, Text, Button, Image } from "@chakra-ui/core";
+import React from 'react';
 import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Link,
-    Redirect,
-    useHistory,
-    useLocation
-} from "react-router-dom";
+  Box, Heading, Flex, Button, Image,
+} from '@chakra-ui/core';
+import {
+  Link,
+} from 'react-router-dom';
 
-
-const MenuItems = ({ children }) => (
-  <Text mt={{ base: 4, md: 0 }} mr={6} display="block">
-    {children}
-  </Text>
-);
-
-const Header = props => {
+const Header = (props) => {
   const [show, setShow] = React.useState(false);
   const handleToggle = () => setShow(!show);
 
@@ -33,18 +22,18 @@ const Header = props => {
       {...props}
     >
       <Flex align="center" mr={5}>
-      <Image
-  rounded="full"
-  size="50px"
-  src="https://i.imgur.com/zyQ9L3t.png"
-  alt="SpringUp logo"
-/>
-        <Heading as="h1" size="lg" ml={'5px'} letterSpacing={"-.1rem"}>
+        <Image
+          rounded="full"
+          size="50px"
+          src="https://i.imgur.com/zyQ9L3t.png"
+          alt="SpringUp logo"
+        />
+        <Heading as="h1" size="lg" ml="5px" letterSpacing="-.1rem">
           SpringUp
         </Heading>
       </Flex>
 
-      <Box display={{ base: "block", md: "none" }} onClick={handleToggle}>
+      <Box display={{ base: 'block', md: 'none' }} onClick={handleToggle}>
         <svg
           fill="white"
           width="12px"
@@ -57,8 +46,8 @@ const Header = props => {
       </Box>
 
       <Box
-        display={{ base: show ? "block" : "none", md: "flex" }}
-        width={{ base: "full", md: "auto" }}
+        display={{ base: show ? 'block' : 'none', md: 'flex' }}
+        width={{ base: 'full', md: 'auto' }}
         alignItems="center"
         flexGrow={1}
       >
@@ -68,13 +57,13 @@ const Header = props => {
       </Box>
 
       <Box
-        display={{ base: show ? "block" : "none", md: "block" }}
+        display={{ base: show ? 'block' : 'none', md: 'block' }}
         mt={{ base: 4, md: 0 }}
       >
         <Link to="/creator">
-            <Button bg="transparent" border="1px">
+          <Button bg="transparent" border="1px">
             Launch App ↗
-            </Button>
+          </Button>
         </Link>
       </Box>
     </Flex>
