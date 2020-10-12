@@ -1,5 +1,15 @@
 import React from "react";
-import { Box, Heading, Flex, Text, Button } from "@chakra-ui/core";
+import { Box, Heading, Flex, Text, Button, Image } from "@chakra-ui/core";
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link,
+    Redirect,
+    useHistory,
+    useLocation
+} from "react-router-dom";
+
 
 const MenuItems = ({ children }) => (
   <Text mt={{ base: 4, md: 0 }} mr={6} display="block">
@@ -23,7 +33,13 @@ const Header = props => {
       {...props}
     >
       <Flex align="center" mr={5}>
-        <Heading as="h1" size="lg" letterSpacing={"-.1rem"}>
+      <Image
+  rounded="full"
+  size="50px"
+  src="https://i.imgur.com/zyQ9L3t.png"
+  alt="SpringUp logo"
+/>
+        <Heading as="h1" size="lg" ml={'5px'} letterSpacing={"-.1rem"}>
           SpringUp
         </Heading>
       </Flex>
@@ -46,18 +62,20 @@ const Header = props => {
         alignItems="center"
         flexGrow={1}
       >
-        <MenuItems>Docs</MenuItems>
+        {/* <MenuItems>Docs</MenuItems>
         <MenuItems>Examples</MenuItems>
-        <MenuItems>Blog</MenuItems>
+        <MenuItems>Blog</MenuItems> */}
       </Box>
 
       <Box
         display={{ base: show ? "block" : "none", md: "block" }}
         mt={{ base: 4, md: 0 }}
       >
-        <Button bg="transparent" border="1px">
-          Get started
-        </Button>
+        <Link to="/creator">
+            <Button bg="transparent" border="1px">
+            Launch App ↗
+            </Button>
+        </Link>
       </Box>
     </Flex>
   );

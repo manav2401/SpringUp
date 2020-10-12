@@ -1,9 +1,19 @@
-import { Heading, Stack, Box, Text } from "@chakra-ui/core";
+// function Feature({ title, desc, ...rest }) {
+//     return (
+//       <Box p={5} shadow="md" borderWidth="1px" {...rest}>
+//         <Heading fontSize="xl">{title}</Heading>
+//         <Text mt={4}>{desc}</Text>
+//       </Box>
+//     );
+//   }
+
+
+
 import React from "react";
 
-const Landing = props => {  
+function Share({ title, desc, ...rest }) {
+
     return (
-     
         <Stack
         ml={'300px'}
         mr={'300px'}
@@ -25,13 +35,11 @@ const Landing = props => {
         </Heading> */}
         <Box display="flex" border='"#fff"' />
       </Stack>
-        // <Box bg="#BCEBCB" m={[20, 30,30,30]} textAlign="center" >
-        //     This is the Box
-        // </Box>
-        // <Box bg="green.50" w="75%" p={4} color="white">
-        //     This is the Box
-        // </Box>
-
+        <div>
+            <p>This is the second page.</p>
+        </div>
     );
-};
-export default Landing;
+
+}
+
+export default Share;
