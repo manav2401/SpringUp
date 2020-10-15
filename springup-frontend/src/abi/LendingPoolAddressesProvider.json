@@ -1,5 +1,4 @@
-module.exports = {
-    'LendingPoolAddressesProviderABI': [
+[
         {
           "anonymous": false,
           "inputs": [
@@ -600,4 +599,3 @@ module.exports = {
           "type": "function"
         }
       ]
-}
