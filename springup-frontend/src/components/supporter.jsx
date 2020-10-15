@@ -4,7 +4,7 @@ import {
   Heading, Stack, Box, useClipboard, Input, Button, Flex,
 } from '@chakra-ui/core';
 import SupporterFunds from './supporterFunds';
-import SupporterGiveaways from './supporterGiveaways';
+// import SupporterGiveaways from './supporterGiveaways';
 import SupporterLevel from './supporterLevel';
 
 // ABI Imports
@@ -114,7 +114,7 @@ function Supporter() {
         </button>
         <SupporterLevel supportLevel="1090" />
         <SupporterFunds frequency="week" amounts={[1, 5, 10]} />
-        <SupporterGiveaways totalRaised="752.11 DAI" numSupporters="21" />
+        {/* <SupporterGiveaways totalRaised="752.11 DAI" numSupporters="21" /> */}
       </div>
     );
   } else {

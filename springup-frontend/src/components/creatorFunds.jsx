@@ -20,7 +20,7 @@ function creatorFunds({ fundsRaised, numSupporters, ...rest }) {
       <Heading padding="20px" textAlign="center" paddingBottom="0px">
         {fundsRaised}
         {' '}
-        raised
+        USDC raised
       </Heading>
       <Heading padding="20px" textAlign="center" paddingBottom="0px">
         {numSupporters}
