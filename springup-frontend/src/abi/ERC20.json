@@ -1,5 +1,4 @@
-module.exports = {
-    'ERC20ABI': [
+[
         {
             "constant": true,
             "inputs": [],
@@ -221,4 +220,3 @@ module.exports = {
             "type": "event"
         }
     ]
-}

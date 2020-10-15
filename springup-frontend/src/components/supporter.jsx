@@ -8,12 +8,13 @@ import SupporterFunds from './supporterFunds';
 import SupporterLevel from './supporterLevel';
 
 // ABI Imports
-import ERC20ABI from '../abi/ERC20';
-import LendingPoolAddressProviderABI from '../abi/LendingPoolAddressesProvider';
-import LendingPoolABI from '../abi/LendingPool';
+import ERC20ABI from '../abi/ERC20.json'
+import LendingPoolAddressProviderABI from '../abi/LendingPoolAddressesProvider.json'
+import LendingPoolABI from '../abi/LendingPool.json'
 
 function Supporter() {
 
+  // const [provider, setProvider] = useState(null);
   const [web3, setWeb3] = useState(null);
   const [myAddress, setMyAddress] = useState(null);
 
@@ -73,17 +74,17 @@ function Supporter() {
    */
   async function deposit() {
     const daiAmountinWei = web3.utils.toWei("1000", "ether").toString()
-    // const daiAddress = "0x6B175474E89094C44Da98b954EedeAC495271d0F" // mainnet DAI
-    // const daiAddress = "0xad6d458402f60fd3bd25163575031acdce07538d" // testnet DAI
-    const ethAdress = "0x722dd3f80bac40c951b51bdd28dd19d435762180" // testnet ETH
+    const daiAddress = '0xf80a32a835f79d7787e8a8ee5721d0feafd78108'; // ropsten testnet dai
+    // const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'; // ropsten testnet ETH
+
     const referralCode = "0"
 
     try {
       const lpCoreAddress = await getLendingPoolCoreAddress()
 
       // Approve the LendingPoolCore address with the DAI contract
-      const ethContract = new web3.eth.Contract(ERC20ABI, ethAdress)
-      await ethContract.methods
+      const daiContract = new web3.eth.Contract(ERC20ABI, daiAddress)
+      await daiContract.methods
         .approve(lpCoreAddress, daiAmountinWei)
         .send({ from: myAddress })
         .catch((e) => {
@@ -94,7 +95,7 @@ function Supporter() {
       const lpAddress = await getLendingPoolAddress()
       const lpContract = new web3.eth.Contract(LendingPoolABI, lpAddress)
       await lpContract.methods
-        .deposit(ethAdress, daiAmountinWei, referralCode)
+        .deposit(daiAddress, daiAmountinWei, referralCode)
         .send({ from: myAddress })
         .catch((e) => {
           throw Error(`Error depositing to the LendingPool contract: ${e.message}`)
@@ -103,6 +104,7 @@ function Supporter() {
       alert(e.message)
       console.log(e.message)
     }
+    console.log('deposit completed.')
   }
 
   if (myAddress != null) {
