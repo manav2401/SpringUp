@@ -6,6 +6,7 @@ import {
   Link,
   useLocation,
 } from 'react-router-dom';
+import logo from '../logo512.png';
 
 const Header = (props) => {
   const [show, setShow] = React.useState(false);
@@ -28,7 +29,8 @@ const Header = (props) => {
           <Image
             rounded="full"
             size="50px"
-            src="https://i.imgur.com/zyQ9L3t.png"
+            src={logo}
+            // src="https://i.imgur.com/zyQ9L3t.png"
             alt="SpringUp logo"
           />
           <Heading as="h1" size="lg" ml="5px" letterSpacing="-.1rem">
