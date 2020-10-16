@@ -4,11 +4,14 @@ import {
 } from '@chakra-ui/core';
 import {
   Link,
+  useLocation,
 } from 'react-router-dom';
 
 const Header = (props) => {
   const [show, setShow] = React.useState(false);
   const handleToggle = () => setShow(!show);
+  const location = useLocation();
+  console.log('location', location);
 
   return (
     <Flex
@@ -55,17 +58,20 @@ const Header = (props) => {
         <MenuItems>Examples</MenuItems>
         <MenuItems>Blog</MenuItems> */}
       </Box>
-
+      { location.pathname === '/'
+      && (
       <Box
         display={{ base: show ? 'block' : 'none', md: 'block' }}
         mt={{ base: 4, md: 0 }}
       >
+
         <Link to="/creator">
           <Button bg="transparent" border="1px">
             Launch App ↗
           </Button>
         </Link>
       </Box>
+      )}
     </Flex>
   );
 };
