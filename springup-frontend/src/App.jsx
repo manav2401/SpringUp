@@ -1,11 +1,7 @@
 import React from 'react';
 import './App.css';
 import { theme, ThemeProvider, CSSReset } from '@chakra-ui/core';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Landing from './components/landing';
 import Creator from './components/creator';
 import Header from './components/header';
