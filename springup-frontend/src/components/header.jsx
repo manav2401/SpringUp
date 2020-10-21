@@ -1,17 +1,13 @@
 import React from 'react';
-import {
-  Box, Heading, Flex, Button, Image,
-} from '@chakra-ui/core';
-import {
-  Link,
-  useLocation,
-} from 'react-router-dom';
+import { Box, Heading, Flex, Button, Image } from '@chakra-ui/core';
+import { Link, useLocation } from 'react-router-dom';
 import logo from '../logo512.png';
 
 const Header = (props) => {
   const [show, setShow] = React.useState(false);
   const handleToggle = () => setShow(!show);
   const location = useLocation();
+  const hasEthereum = window.ethereum;
 
   return (
     <Flex
@@ -61,19 +57,30 @@ const Header = (props) => {
         <MenuItems>Examples</MenuItems>
         <MenuItems>Blog</MenuItems> */}
       </Box>
-      { location.pathname === '/'
-      && (
-      <Box
-        display={{ base: show ? 'block' : 'none', md: 'block' }}
-        mt={{ base: 4, md: 0 }}
-      >
-
-        <Link to="/creator">
-          <Button bg="transparent" border="1px">
-            Launch App ↗
-          </Button>
-        </Link>
-      </Box>
+      {location.pathname === '/' && (
+        <Flex>
+          <Box
+            display={{ base: show ? 'block' : 'none', md: 'block' }}
+            mt={{ base: 4, md: 0 }}
+            mr={5}
+          >
+            <Link to="/supporter">
+              <Button bg="transparent" border="1px" isDisabled={!hasEthereum}>
+                Launch Supporter App ↗
+              </Button>
+            </Link>
+          </Box>
+          <Box
+            display={{ base: show ? 'block' : 'none', md: 'block' }}
+            mt={{ base: 4, md: 0 }}
+          >
+            <Link to="/creator">
+              <Button bg="transparent" border="1px" isDisabled={!hasEthereum}>
+                Launch Creator App ↗
+              </Button>
+            </Link>
+          </Box>
+        </Flex>
       )}
     </Flex>
   );
