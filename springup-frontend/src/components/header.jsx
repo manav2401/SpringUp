@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Heading, Flex, Button, Image } from '@chakra-ui/core';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../logo512.png';
@@ -8,6 +8,28 @@ const Header = (props) => {
   const handleToggle = () => setShow(!show);
   const location = useLocation();
   const hasEthereum = window.ethereum;
+
+  const [raidenAddress, setRaidenAddress] = useState(null);
+
+  useEffect(() => {
+    async function getRaidenAccount() {
+      // call the raiden api for fetching the address
+      let raidenNetworkAddress = null;
+      await fetch('http://localhost:5001/api/v1/address')
+        .then((res) => res.json())
+        .then((data) => {
+          raidenNetworkAddress = data.our_address;
+        })
+        .catch((e) => {
+          console.log('error in fetching raiden account: ' + e.message);
+        });
+
+      console.log('Raiden Wallet Address: ' + raidenNetworkAddress);
+      setRaidenAddress(raidenNetworkAddress);
+    }
+
+    getRaidenAccount();
+  }, []);
 
   return (
     <Flex
@@ -74,7 +96,7 @@ const Header = (props) => {
             display={{ base: show ? 'block' : 'none', md: 'block' }}
             mt={{ base: 4, md: 0 }}
           >
-            <Link to="/creator">
+            <Link to={`/creator/${raidenAddress}`}>
               <Button bg="transparent" border="1px" isDisabled={!hasEthereum}>
                 Launch Creator App ↗
               </Button>
