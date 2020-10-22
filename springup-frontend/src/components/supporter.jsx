@@ -21,9 +21,8 @@ import LendingPoolABI from '../abi/LendingPool.json';
 import minABI from '../abi/minABI.json';
 import SupporterAccount from './supporterAccount';
 
-const ropstenEthTokenAddress = '';
-const ropstenDaiTokenAddress = '0xf80a32a835f79d7787e8a8ee5721d0feafd78108';
-const ropstenADaiTokenAddress = '0xcB1Fe6F440c49E9290c3eb7f158534c2dC374201';
+const ropstenDaiTokenAddress = "0xf80a32a835f79d7787e8a8ee5721d0feafd78108";
+const ropstenADaiTokenAddress = "0xcB1Fe6F440c49E9290c3eb7f158534c2dC374201";
 
 function Supporter() {
   const { creatorAddress } = useParams();
@@ -39,27 +38,41 @@ function Supporter() {
   const [raidenDaiBalance, setRaidenDaiBalance] = useState(0);
   const [raidenADaiBalance, setRaidenADaiBalance] = useState(0);
 
-  function testFunction() {
-    console.log('inside test function');
-  }
+  async function getBalance(userAddress, token) {
 
-  async function getBalance(userAddress, tokenAddress) {
-    console.log(
-      'user address: ' + userAddress + ' and token address: ' + tokenAddress
-    );
-    let tokenContract = new window.web3.eth.Contract(ERC20ABI, tokenAddress);
+    let tokenAddress = '';
     let balance = 0;
-    await tokenContract.methods
-      .balanceOf(userAddress)
-      .call()
-      .then((res) => {
-        balance = res;
-      })
-      .catch((e) => {
-        throw Error(`Error getting lendingPool address: ${e.message}`);
-      });
+    
+    if (token === 'eth') {
+      console.log('user address: ' + userAddress);
+      await window.web3.eth.getBalance(userAddress)
+        .then((result) => {
+          balance = +(Web3.utils.fromWei(result, 'ether'));
+          balance = Number(balance.toPrecision(3));
+          return balance;
+        })
+        .catch((e) => {
+          console.log('error in fetching ethereum balance: ' + e);
+        }) 
 
-    balance = Number(balance / Math.pow(10, 18));
+    } else if (token === 'dai' || token === 'adai') {
+      tokenAddress = (token === 'dai') ? ropstenDaiTokenAddress : ropstenADaiTokenAddress;
+      console.log('user address: ' + userAddress + ' and token address: ' + tokenAddress);
+      let tokenContract = new window.web3.eth.Contract(ERC20ABI, tokenAddress);
+      await tokenContract.methods
+        .balanceOf(userAddress)
+        .call()
+        .then((res) => {
+          balance = res;
+        })
+        .catch((e) => {
+          throw Error(`Error getting lendingPool address: ${e.message}`);
+        });
+        balance = Number(balance / Math.pow(10, 18));
+        
+    } else {
+      return;
+    }
     balance = balance.toPrecision(3);
     return Number(balance);
   }
@@ -75,15 +88,6 @@ function Supporter() {
       console.log('Metamask Wallet Address: ' + address);
       setMyAddress(address);
 
-      // setMetamaskEthBalance(getBalance(address, ropstenEthTokenAddress));
-      setMetamaskDaiBalance(await getBalance(address, ropstenDaiTokenAddress));
-      setMetamaskADaiBalance(
-        await getBalance(address, ropstenADaiTokenAddress)
-      );
-    }
-
-    async function getRaidenAccount() {
-      // call the raiden api for fetching the address
       let raidenNetworkAddress = null;
       await fetch('http://localhost:5001/api/v1/address')
         .then((res) => res.json())
@@ -97,18 +101,27 @@ function Supporter() {
       console.log('Raiden Wallet Address: ' + raidenNetworkAddress);
       setRaidenAddress(raidenNetworkAddress);
 
-      // setRaidenEthBalance(await getBalance(raidenAddress, ropstenEthTokenAddress));
-      setRaidenDaiBalance(
-        await getBalance(raidenNetworkAddress, ropstenDaiTokenAddress)
-      );
-      setRaidenADaiBalance(
-        await getBalance(raidenNetworkAddress, ropstenADaiTokenAddress)
-      );
+      setMetamaskEthBalance(await getBalance(address, 'eth'));
+      setMetamaskDaiBalance(await getBalance(address, 'dai'));
+      setMetamaskADaiBalance(await getBalance(address, 'adai'));
+      setRaidenEthBalance(await getBalance(raidenNetworkAddress, 'eth'));
+      setRaidenDaiBalance(await getBalance(raidenNetworkAddress, 'dai'));
+      setRaidenADaiBalance(await getBalance(raidenNetworkAddress, 'adai'));
     }
 
     getMetamaskAccount();
-    getRaidenAccount();
+
   }, []);
+
+  function test() {
+    console.log('web3: ' + web3);
+    console.log('mm: ' + myAddress);
+    console.log('raiden: ' + raidenAddress);
+    console.log('metamask eth: ' + metamaskEthBalance);
+    console.log('metamask dai: ' + metamaskDaiBalance);
+    console.log('raiden eth: ' + raidenEthBalance);
+    console.log('raiden dai: ' + raidenDaiBalance);
+  }
 
   // Create the LendingPoolAddressProvider contract instance
   function getLendingPoolAddressProviderContract() {
@@ -188,18 +201,39 @@ function Supporter() {
   }
 
   async function transferToRaiden(token, amount) {
-    // assign token address for ropsten network
 
-    const tokenAddress = '';
+    // the contract address (use transfer function of this token)
+    let tokenContractAddress = '';
     if (token === 'eth') {
-      tokenAddress = '';
+      // tokenContractAddress = ropstenEthTokenAddress;
     } else if (token === 'dai') {
-      tokenAddress = '0xf80a32a835f79d7787e8a8ee5721d0feafd78108';
+      tokenContractAddress = ropstenDaiTokenAddress;
     } else if (token === 'adai') {
-      tokenAddress = '0xcB1Fe6F440c49E9290c3eb7f158534c2dC374201';
+      tokenContractAddress = ropstenADaiTokenAddress;
     } else {
       return;
     }
+
+    // define address
+    if (myAddress == null || raidenAddress == null) {
+      return;
+    }
+
+    amount = Number(amount * Math.pow(10, 18));
+    let txValue = web3.utils.toHex(amount);
+
+    let tokenContract = new window.web3.eth.Contract(ERC20ABI, tokenContractAddress);
+    await tokenContract.methods
+      .transfer(raidenAddress, txValue)
+      .send({from: myAddress})
+      .then((res) => {
+        console.log('Result of transfer function: ' + res);
+      })
+      .catch((e) => {
+        //throw Error(`Error in transfer funds: ${e.message}`);
+        console.log('Transaction failed!' + e.message);
+      });
+      
   }
 
   return (
