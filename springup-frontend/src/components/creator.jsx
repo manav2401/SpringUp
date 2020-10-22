@@ -154,7 +154,7 @@ function Creator() {
     <div>
       <CreatorShare link={creatorAddress} />
       <CreatorFunds fundsRaised="752.11" numSupporters="21" />
-      {/* <CreatorGiveaways totalRaised="752.11 DAI" numSupporters="21" /> */}
+      <CreatorGiveaways />
     </div>
   ) : (
     loadingOrRedirect
