@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
 import {
-  Heading, Stack, Box, useClipboard, Input, Button, Flex,
+  Heading,
+  Stack,
+  Box,
+  useClipboard,
+  Input,
+  Button,
+  Flex,
 } from '@chakra-ui/core';
+import { useParams } from 'react-router-dom';
 import SupporterFunds from './supporterFunds';
 // import SupporterGiveaways from './supporterGiveaways';
 import SupporterLevel from './supporterLevel';
@@ -11,14 +18,15 @@ import SupporterLevel from './supporterLevel';
 import ERC20ABI from '../abi/ERC20.json';
 import LendingPoolAddressProviderABI from '../abi/LendingPoolAddressesProvider.json';
 import LendingPoolABI from '../abi/LendingPool.json';
-import minABI from '../abi/minABI.json'
+import minABI from '../abi/minABI.json';
 import SupporterAccount from './supporterAccount';
 
 const ropstenDaiTokenAddress = "0xf80a32a835f79d7787e8a8ee5721d0feafd78108";
 const ropstenADaiTokenAddress = "0xcB1Fe6F440c49E9290c3eb7f158534c2dC374201";
 
 function Supporter() {
-  // const [provider, setProvider] = useState(null);
+  const { creatorAddress } = useParams();
+
   const [web3, setWeb3] = useState(null);
   const [myAddress, setMyAddress] = useState(null);
   const [raidenAddress, setRaidenAddress] = useState(null);
@@ -70,7 +78,6 @@ function Supporter() {
   }
 
   useEffect(() => {
-
     async function getMetamaskAccount() {
       const web3Instance = new Web3(window.ethereum);
       window.ethereum.enable();
@@ -83,15 +90,15 @@ function Supporter() {
 
       let raidenNetworkAddress = null;
       await fetch('http://localhost:5001/api/v1/address')
-        .then(res => res.json())
+        .then((res) => res.json())
         .then((data) => {
           raidenNetworkAddress = data['our_address'];
         })
         .catch((e) => {
           console.log('error in fetching raiden account: ' + e.message);
-        })
+        });
 
-      console.log('Raiden Wallet Address: ' +  raidenNetworkAddress);
+      console.log('Raiden Wallet Address: ' + raidenNetworkAddress);
       setRaidenAddress(raidenNetworkAddress);
 
       setMetamaskEthBalance(await getBalance(address, 'eth'));
@@ -193,7 +200,7 @@ function Supporter() {
     console.log('deposit completed.');
   }
 
-  async function transferFunds(token, amount) {
+  async function transferToRaiden(token, amount) {
 
     // the contract address (use transfer function of this token)
     let tokenContractAddress = '';
@@ -231,146 +238,146 @@ function Supporter() {
 
   return (
     <>
-    {myAddress == null ? (
-      <Stack
-        ml="300px"
-        mr="300px"
-        mt="100px"
-        border={30}
-        borderRadius={40}
-        borderWidth="20px"
-        backgroundColor="whiteAlpha.500"
-        opacity={1}
-        shadow="md"
-      >
-        <Heading padding="20px" textAlign="center">
-          Connect with Metamask to proceed
-        </Heading>
-      </Stack>
-    ) : (
-      <></>
-    )}
+      {myAddress == null ? (
+        <Stack
+          ml="300px"
+          mr="300px"
+          mt="100px"
+          border={30}
+          borderRadius={40}
+          borderWidth="20px"
+          backgroundColor="whiteAlpha.500"
+          opacity={1}
+          shadow="md"
+        >
+          <Heading padding="20px" textAlign="center">
+            Connect with Metamask to proceed
+          </Heading>
+        </Stack>
+      ) : (
+        <></>
+      )}
 
-    {raidenAddress == null ? (
-      <Stack
-        ml="300px"
-        mr="300px"
-        mt="100px"
-        border={30}
-        borderRadius={40}
-        borderWidth="20px"
-        backgroundColor="whiteAlpha.500"
-        opacity={1}
-        shadow="md"
-      >
-        <Heading padding="20px" textAlign="center">
-        Unable to fetch raiden account address. Please setup a raiden node on your local machine to proceed. Visit <a href="https://docs.raiden.network/" target="_blank">Raiden Docs</a> for help.
-        </Heading>
-      </Stack>
-    ) : (
-      <></>
-    )}
+      {raidenAddress == null ? (
+        <Stack
+          ml="300px"
+          mr="300px"
+          mt="100px"
+          border={30}
+          borderRadius={40}
+          borderWidth="20px"
+          backgroundColor="whiteAlpha.500"
+          opacity={1}
+          shadow="md"
+        >
+          <Heading padding="20px" textAlign="center">
+            Unable to fetch raiden account address. Please setup a raiden node
+            on your local machine to proceed. Visit{' '}
+            <a href="https://docs.raiden.network/" target="_blank">
+              Raiden Docs
+            </a>{' '}
+            for help.
+          </Heading>
+        </Stack>
+      ) : (
+        <></>
+      )}
 
-    {(myAddress != null && raidenAddress != null) ? (
-      <Stack
-        ml="300px"
-        mr="300px"
-        mt="100px"
-        border={30}
-        borderRadius={40}
-        borderWidth="20px"
-        backgroundColor="whiteAlpha.500"
-        opacity={1}
-        shadow="md"
-      >
-        
-      <Stack
-        ml="300px"
-        mr="300px"
-        mt="100px"
-        border={30}
-        borderRadius={40}
-        borderWidth="20px"
-        backgroundColor="whiteAlpha.500"
-        opacity={1}
-        shadow="md"
-      >
+      {myAddress != null && raidenAddress != null ? (
+        <>
+          <Stack
+            ml="300px"
+            mr="300px"
+            mt="100px"
+            border={30}
+            borderRadius={40}
+            borderWidth="20px"
+            backgroundColor="whiteAlpha.500"
+            opacity={1}
+            shadow="md"
+          >
+            {/** Metamask Address and Tokens */}
+            <Heading padding="20px" textAlign="center" paddingBottom="0px">
+              Your Metamask Account
+            </Heading>
+            <Flex padding="20px" align="flex-end">
+              {myAddress}
+            </Flex>
 
-        <Flex padding="20px" align="flex-end">
-          <Button textAlign="center" marginLeft="100px" onClick={async () => await test()}>
-            TEST
-          </Button>
-        </Flex>
+            {/** ETH Token */}
+            <Flex padding="20px" align="flex-end">
+              {metamaskEthBalance} ETH
+            </Flex>
 
-        {/** Metamask Address and Tokens */}
-        <Heading padding="20px" textAlign="center" paddingBottom="0px">Your Metamask Account</Heading>
-        <Flex padding="20px" align="flex-end">
-            {myAddress}
-        </Flex>
+            {/** DAI Token */}
+            <Flex padding="20px" align="flex-end">
+              {metamaskDaiBalance} DAI
+            </Flex>
 
-        {/** ETH Token */}
-        <Flex padding="20px" align="flex-end">
-            {metamaskEthBalance} ETH            
-        </Flex>
+            {/** aDAI (Aave Interest Bearing Token) Token */}
+            <Flex padding="20px" align="flex-end">
+              {metamaskADaiBalance} aDAI
+            </Flex>
 
-        {/** DAI Token */}
-        <Flex padding="20px" align="flex-end">
-            {metamaskDaiBalance} DAI
-        </Flex>
+            {/** Raiden Address and Tokens */}
+            <Heading padding="20px" textAlign="center" paddingBottom="0px">
+              Your Raiden Account
+            </Heading>
+            <Flex padding="20px" align="flex-end">
+              {raidenAddress}
+            </Flex>
 
-        {/** aDAI (Aave Interest Bearing Token) Token */}
-        <Flex padding="20px" align="flex-end">
-            {metamaskADaiBalance} aDAI
-        </Flex>
+            {/** ETH Token */}
+            <Flex padding="20px" align="flex-end">
+              {raidenEthBalance} ETH
+            </Flex>
+            <Flex padding="20px" align="flex-end">
+              <Button
+                textAlign="center"
+                marginLeft="100px"
+                onClick={async () => await transferToRaiden('eth')}
+              >
+                Transfer ETH to this account
+              </Button>
+            </Flex>
 
-        {/** Raiden Address and Tokens */}
-        <Heading padding="20px" textAlign="center" paddingBottom="0px">Your Raiden Account</Heading>
-        <Flex padding="20px" align="flex-end">
-            {raidenAddress}
-        </Flex>
+            {/** DAI Token */}
+            <Flex padding="20px" align="flex-end">
+              {raidenDaiBalance} DAI
+            </Flex>
+            <Flex padding="20px" align="flex-end">
+              <Button
+                textAlign="center"
+                marginLeft="100px"
+                onClick={async () => await transferToRaiden('dai')}
+              >
+                Transfer DAI to this account
+              </Button>
+            </Flex>
 
-        {/** ETH Token */}
-        <Flex padding="20px" align="flex-end">
-            {raidenEthBalance} ETH            
-        </Flex>
-        <Flex padding="20px" align="flex-end">
-          <Button textAlign="center" marginLeft="100px" onClick={async () => await transferFunds('eth', 10)}>
-            Transfer ETH to this account
-          </Button>
-        </Flex>
-        
-        {/** DAI Token */}
-        <Flex padding="20px" align="flex-end">
-            {raidenDaiBalance} DAI
-        </Flex>
-        <Flex padding="20px" align="flex-end">
-          <Button textAlign="center" marginLeft="100px" onClick={async () => await transferFunds('dai', 10)}>
-            Transfer DAI to this account
-          </Button>
-        </Flex>
+            {/** aDAI (Aave Interest Bearing Token) Token */}
+            <Flex padding="20px" align="flex-end">
+              {raidenADaiBalance} aDAI
+            </Flex>
+            <Flex padding="20px" align="flex-end">
+              <Button
+                textAlign="center"
+                marginLeft="100px"
+                onClick={async () => await transferToRaiden('adai')}
+              >
+                Transfer aDAI (aave token) to this account
+              </Button>
+            </Flex>
+          </Stack>
 
-        {/** aDAI (Aave Interest Bearing Token) Token */}
-        <Flex padding="20px" align="flex-end">
-            {raidenADaiBalance} aDAI
-        </Flex>
-        <Flex padding="20px" align="flex-end">
-          <Button textAlign="center" marginLeft="100px" onClick={async () => await transferFunds('adai', 10)}>
-            Transfer aDAI (aave token) to this account
-          </Button>
-        </Flex>
-       
-
-      </Stack>
-
-        <SupporterLevel supportLevel="1090" />
-        <SupporterFunds frequency="week" amounts={[1, 5, 10]} />
-      </Stack>
-    ) : (
-      <></>
-    )}
-
+          <SupporterLevel supportLevel="1090" />
+          <SupporterFunds frequency="week" amounts={[1, 5, 10]} />
+        </>
+      ) : (
+        <></>
+      )}
     </>
-  )
+  );
 }
 
 export default Supporter;

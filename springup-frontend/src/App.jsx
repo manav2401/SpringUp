@@ -26,8 +26,8 @@ function App() {
         <Header />
         <Switch>
           <Route exact path="/" component={Landing} />
-          <Route path="/creator" component={Creator} />
-          <Route path="/supporter" component={Supporter} />
+          <Route path="/creator/:address?" component={Creator} />
+          <Route path="/supporter/:creatorAddress?" component={Supporter} />
         </Switch>
       </ThemeProvider>
     </Router>

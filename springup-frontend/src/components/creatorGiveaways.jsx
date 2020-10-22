@@ -1,6 +1,15 @@
 import React from 'react';
 import {
-  Heading, Stack, Box, useClipboard, Input, Button, Flex,
+  Heading,
+  Stack,
+  Box,
+  useClipboard,
+  Input,
+  Button,
+  Flex,
+  FormControl,
+  FormHelperText,
+  FormLabel,
 } from '@chakra-ui/core';
 
 function CreatorGiveaways({ totalRaised, numSupporters, ...rest }) {
@@ -16,22 +25,32 @@ function CreatorGiveaways({ totalRaised, numSupporters, ...rest }) {
       opacity={1}
       shadow="md"
     >
-      <Heading padding="20px" textAlign="center" paddingBottom="0px">Your Giveaways</Heading>
-
-      <Heading padding="20px" textAlign="center" paddingBottom="5px">
-        Total Raised:
-        {' '}
-        {totalRaised}
-      </Heading>
-      <Heading padding="20px" textAlign="center" paddingBottom="5px">
-        Number of Supporters:
-        {' '}
-        {numSupporters}
+      <Heading padding="20px" textAlign="center" paddingBottom="0px">
+        Your Support Levels
       </Heading>
 
-      <Flex padding="20px" align="flex-end">
-        <Button textAlign="center" marginLeft="300px"> Farm</Button>
-        <Button marginLeft="50px"> Withdraw</Button>
+      <FormControl padding="20px" textAlign="center">
+        <FormLabel htmlFor="email">Premium Video #5</FormLabel>
+        <Input
+          value="https://mega.nz/file/8B0U0ZpR#UNpDB3VVqnFarxqQicWyGQIhLFQWgp_AbzvoOYxyAhQ"
+          isReadOnly
+        />
+        <FormHelperText>Secret: *******</FormHelperText>
+        <Button> Update </Button>
+        <Button marginLeft="50px"> Delete </Button>
+      </FormControl>
+      <FormControl padding="20px" textAlign="center">
+        <FormLabel htmlFor="email">Alpha Game Release</FormLabel>
+        <Input
+          value="https://bit.ly/sdh1238hsadf2ASDFh142h123ASDF"
+          isReadOnly
+        />
+        <FormHelperText>Secret: *******</FormHelperText>
+        <Button> Update </Button>
+        <Button marginLeft="50px"> Delete </Button>
+      </FormControl>
+      <Flex padding="20px" justifyContent="center">
+        <Button> Add New </Button>
       </Flex>
     </Stack>
   );
