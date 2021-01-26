@@ -6,8 +6,10 @@ import {
   Box,
   useClipboard,
   Input,
+  InputGroup,
   Button,
   Flex,
+  InputRightAddon,
 } from '@chakra-ui/core';
 import { useParams } from 'react-router-dom';
 import SupporterFunds from './supporterFunds';
@@ -25,18 +27,32 @@ const ropstenDaiTokenAddress = "0xf80a32a835f79d7787e8a8ee5721d0feafd78108";
 const ropstenADaiTokenAddress = "0xcB1Fe6F440c49E9290c3eb7f158534c2dC374201";
 
 function Supporter() {
+
   const { creatorAddress } = useParams();
 
+  // web3 instance
   const [web3, setWeb3] = useState(null);
+
+  // address
   const [myAddress, setMyAddress] = useState(null);
   const [raidenAddress, setRaidenAddress] = useState(null);
 
+  // balances
   const [metamaskEthBalance, setMetamaskEthBalance] = useState(0);
   const [metamaskDaiBalance, setMetamaskDaiBalance] = useState(0);
   const [metamaskADaiBalance, setMetamaskADaiBalance] = useState(0);
   const [raidenEthBalance, setRaidenEthBalance] = useState(0);
   const [raidenDaiBalance, setRaidenDaiBalance] = useState(0);
   const [raidenADaiBalance, setRaidenADaiBalance] = useState(0);
+
+  // values
+  const [ethValue, setEthValue] = useState(0);
+  const [daiValue, setDaiValue] = useState(0);
+  const [aDaiValue, setADaiValue] = useState(0);
+  const [depositValue, setDepositValue] = useState(0);
+
+  // support amounts
+  const amounts = [5, 10, 15];
 
   async function getBalance(userAddress, token) {
 
@@ -101,12 +117,15 @@ function Supporter() {
       console.log('Raiden Wallet Address: ' + raidenNetworkAddress);
       setRaidenAddress(raidenNetworkAddress);
 
-      setMetamaskEthBalance(await getBalance(address, 'eth'));
-      setMetamaskDaiBalance(await getBalance(address, 'dai'));
-      setMetamaskADaiBalance(await getBalance(address, 'adai'));
-      setRaidenEthBalance(await getBalance(raidenNetworkAddress, 'eth'));
-      setRaidenDaiBalance(await getBalance(raidenNetworkAddress, 'dai'));
-      setRaidenADaiBalance(await getBalance(raidenNetworkAddress, 'adai'));
+      if (address != null && raidenNetworkAddress != null) {
+        setMetamaskEthBalance(await getBalance(address, 'eth'));
+        setMetamaskDaiBalance(await getBalance(address, 'dai'));
+        setMetamaskADaiBalance(await getBalance(address, 'adai'));
+        setRaidenEthBalance(await getBalance(raidenNetworkAddress, 'eth'));
+        setRaidenDaiBalance(await getBalance(raidenNetworkAddress, 'dai'));
+        setRaidenADaiBalance(await getBalance(raidenNetworkAddress, 'adai'));        
+      }
+      console.log('params: ' + creatorAddress);
     }
 
     getMetamaskAccount();
@@ -163,8 +182,12 @@ function Supporter() {
    * Deposit DAI into Aave to receive the equivalent aDAI
    * Note: User must have DAI already in their wallet!
    */
-  async function deposit() {
-    const daiAmountinWei = web3.utils.toWei('1000', 'ether').toString();
+  async function depositToAave() {
+
+    const amount = depositValue.toString();
+    console.log('confirmed deposit value: ' + amount);
+    console.log('address used: ' + raidenAddress);
+    const daiAmountinWei = web3.utils.toWei(amount, 'ether').toString();
     const daiAddress = '0xf80a32a835f79d7787e8a8ee5721d0feafd78108'; // ropsten testnet dai
     // const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'; // ropsten testnet ETH
 
@@ -200,16 +223,21 @@ function Supporter() {
     console.log('deposit completed.');
   }
 
-  async function transferToRaiden(token, amount) {
+  async function transferToRaiden(token) {
 
     // the contract address (use transfer function of this token)
     let tokenContractAddress = '';
+    let amount = 0;
+
     if (token === 'eth') {
+      amount = ethValue;
       // tokenContractAddress = ropstenEthTokenAddress;
     } else if (token === 'dai') {
       tokenContractAddress = ropstenDaiTokenAddress;
+      amount = daiValue;
     } else if (token === 'adai') {
       tokenContractAddress = ropstenADaiTokenAddress;
+      amount = aDaiValue;
     } else {
       return;
     }
@@ -234,6 +262,53 @@ function Supporter() {
         console.log('Transaction failed!' + e.message);
       });
       
+  }
+
+  function fundCreator(amount) {
+     
+    // creating a payment channel
+    // from: your (supporter raiden address)
+    // to: address in params (0x749388EAB7D316f5A74fbd0a4774970Ce1c37Cf6) (here taken dummy)
+    // amount: function param
+
+    let url = 'http://localhost:5001/api/v1/payments/'
+    url += ropstenADaiTokenAddress + '/'
+    url += '0x749388EAB7D316f5A74fbd0a4774970Ce1c37Cf6';
+
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        "amount": Number(amount).toString(),
+        "identifier": raidenAddress
+      })
+    })
+      .then((result) => {
+        console.log('Payment done!');
+        console.log(result);
+      })
+      .catch((e) => {
+        console.log('Error in creating payment channel: ' + e);
+      })
+
+  }
+
+  function handleEthAmountChange(e) {
+    setEthValue(Number(e.target.value));
+  }
+
+  function handleDaiAmountChange(e) {
+    setDaiValue(Number(e.target.value));
+  }
+
+  function handleADaiAmountChange(e) {
+    setADaiValue(Number(e.target.value));
+  }
+
+  function handleDepositDaiAmountChange(e) {
+    setDepositValue(Number(e.target.value));
   }
 
   return (
@@ -339,6 +414,17 @@ function Supporter() {
               >
                 Transfer ETH to this account
               </Button>
+
+              <InputGroup>
+                  <InputRightAddon children="ETH" />
+                  <Input 
+                    type="text"
+                    roundedLeft="0" 
+                    placeholder="ETH Amount"
+                    size="md"
+                    onChange={handleEthAmountChange}/>
+              </InputGroup>
+
             </Flex>
 
             {/** DAI Token */}
@@ -353,6 +439,16 @@ function Supporter() {
               >
                 Transfer DAI to this account
               </Button>
+
+              <InputGroup>
+                    <InputRightAddon children="DAI" />
+                    <Input 
+                      type="text"
+                      roundedLeft="0" 
+                      placeholder="DAI Amount"
+                      size="md"
+                      onChange={handleDaiAmountChange}/>
+              </InputGroup>
             </Flex>
 
             {/** aDAI (Aave Interest Bearing Token) Token */}
@@ -367,11 +463,81 @@ function Supporter() {
               >
                 Transfer aDAI (aave token) to this account
               </Button>
+              <InputGroup>
+                  <InputRightAddon children="aDAI" />
+                  <Input 
+                    type="text"
+                    roundedLeft="0" 
+                    placeholder="aDAI Amount"
+                    size="md"
+                    onChange={handleADaiAmountChange}/>
+              </InputGroup>
             </Flex>
+
+            {/** Generate Aave Tokens */}
+            <Flex padding="20px" align="flex-end">
+              Deposit your DAI tokens to get interest bearing Aave Tokens and support your favourite creator directly.
+            </Flex>
+            <Flex padding="20px" align="flex-end">
+              <Button
+                textAlign="center"
+                marginLeft="100px"
+                onClick={async () => await depositToAave()}
+              >
+                Deposit
+              </Button>
+              <InputGroup>
+                  <InputRightAddon children="DAI" />
+                  <Input 
+                    type="text"
+                    roundedLeft="0" 
+                    placeholder="DAI Amount"
+                    size="md"
+                    onChange={handleDepositDaiAmountChange}/>
+              </InputGroup>
+            </Flex>
+
           </Stack>
 
           <SupporterLevel supportLevel="1090" />
-          <SupporterFunds frequency="week" amounts={[1, 5, 10]} />
+          
+          {/**Support creators */}
+          <Stack
+            ml="300px"
+            mr="300px"
+            mt="100px"
+            border={30}
+            borderRadius={40}
+            borderWidth="20px"
+            backgroundColor="whiteAlpha.500"
+            opacity={1}
+            shadow="md"
+          >
+            <Heading padding="20px" textAlign="center" paddingBottom="0px">Your Funding Level</Heading>
+
+            <Flex padding="20px" align="flex-end">
+              <Button textAlign="center" marginLeft="150px" onClick={async () => await fundCreator(amounts[0])}>
+                {' '}
+                {amounts[0]}
+                {' '}
+                aDAI per month
+              </Button>
+              <Button marginLeft="50px" onClick={async () => await fundCreator(amounts[1])}>
+                {' '}
+                {amounts[1]}
+                {' '}
+                aDAI per month
+              </Button>
+              <Button marginLeft="50px" onClick={async () => await fundCreator(amounts[2])}>
+                {' '}
+                {amounts[2]}
+                {' '}
+                aDAI per month
+              </Button>
+            </Flex>
+          </Stack>
+
+
         </>
       ) : (
         <></>
